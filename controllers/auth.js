@@ -3,7 +3,6 @@ const { StatusCodes } = require("http-status-codes");
 
 const User = require("../models/user");
 const Note = require("../models/notes");
-const user = require("../models/user");
 
 const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
