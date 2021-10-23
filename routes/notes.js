@@ -9,6 +9,10 @@ const {
     deleteNote,
 } = require("../controllers/notes");
 
+// Add Path
+// Update Path
+// Delete Path
+
 router.route("/").get(getAllNotes);
 router.route("/").post(createNote);
 router.route("/:id").get(getNote);

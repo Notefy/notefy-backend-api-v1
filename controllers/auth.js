@@ -3,6 +3,7 @@ const { StatusCodes } = require("http-status-codes");
 
 const User = require("../models/user");
 const Note = require("../models/notes");
+const user = require("../models/user");
 
 const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
@@ -80,8 +81,37 @@ const updateUser = async (req, res) => {
     });
 };
 
+const deleteUser = async (req, res) => {
+    const userObjectId = mongoose.Types.ObjectId(req.userID);
+    const { password } = req.body;
+
+    if (!password)
+        return res
+            .status(StatusCodes.BAD_REQUEST)
+            .json({ msg: "Please provide email and password" });
+
+    const user = await User.findById(userObjectId);
+    if (!user)
+        return res
+            .status(StatusCodes.UNAUTHORIZED)
+            .json({ msg: "Invalid Credentials" });
+
+    if (!(await user.isPasswordCorrect(password)))
+        return res
+            .status(StatusCodes.UNAUTHORIZED)
+            .json({ msg: "Invalid Credentials" });
+
+    // TODO: Delete the notes and folder by user
+    const deletedUser = await User.findByIdAndDelete(userObjectId);
+
+    res.status(StatusCodes.OK).json({
+        msg: `${deletedUser.name} deleted`,
+    });
+};
+
 module.exports = {
     registerUser,
     loginUser,
     updateUser,
+    deleteUser,
 };
