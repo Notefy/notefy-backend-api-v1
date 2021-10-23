@@ -1,3 +1,9 @@
 /node_modules
 /.vscode
+
+
 .env
+
+
+# Thunder Client API Requests
+/thunder-tests/thunderEnvironment.db
