@@ -7,7 +7,7 @@ const { StatusCodes } = require("http-status-codes");
 const getAllNotes = async (req, res) => {
     // console.log(req.query);
     // Notes by user
-    let query = { createdBy: req.user.userID };
+    let query = { createdBy: req.userID };
 
     // Only notes with matching path. All notes if !path
     const path = req.query.path || "root";
@@ -67,7 +67,7 @@ const validPath = ({ folderStructure, path }) => {
 };
 
 const createNote = async (req, res) => {
-    const userObjectId = mongoose.Types.ObjectId(req.user.userID);
+    const userObjectId = mongoose.Types.ObjectId(req.userID);
     const user = await User.findById(userObjectId);
     const currentAvailableUsertags = user.tags;
 
@@ -103,7 +103,7 @@ const createNote = async (req, res) => {
 
 const getNote = async (req, res) => {
     const {
-        user: { userID },
+        userID,
         params: { id: noteID },
     } = req;
     const note = await Note.findOne({ _id: noteID, createdBy: userID });
@@ -118,7 +118,7 @@ const getNote = async (req, res) => {
 
 const updateNote = async (req, res) => {
     const {
-        user: { userID },
+        userID,
         params: { id: noteID },
     } = req;
 
@@ -153,7 +153,7 @@ const updateNote = async (req, res) => {
 
 const deleteNote = async (req, res) => {
     const {
-        user: { userID },
+        userID,
         params: { id: noteID },
     } = req;
     const note = await Note.findOneAndDelete({

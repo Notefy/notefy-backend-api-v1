@@ -46,11 +46,9 @@ UserSchema.methods.isPasswordCorrect = async function (givenPassword) {
 };
 
 UserSchema.methods.createJWT = function () {
-    return jwt.sign(
-        { userID: this._id, name: this.name, email: this.email },
-        process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_LIFETIME }
-    );
+    return jwt.sign({ userID: this._id }, process.env.JWT_SECRET, {
+        expiresIn: process.env.JWT_LIFETIME,
+    });
 };
 
 module.exports = mongoose.model("User", UserSchema);
