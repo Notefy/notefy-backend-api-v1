@@ -4,7 +4,7 @@ const { StatusCodes } = require("http-status-codes");
 const User = require("../models/user");
 const Note = require("../models/notes");
 
-const register = async (req, res) => {
+const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
 
     if (await User.findOne({ email }))
@@ -26,7 +26,7 @@ const register = async (req, res) => {
     });
 };
 
-const login = async (req, res) => {
+const loginUser = async (req, res) => {
     const { email, password } = req.body;
     if (!email || !password)
         return res
@@ -81,7 +81,7 @@ const updateUser = async (req, res) => {
 };
 
 module.exports = {
-    register,
-    login,
+    registerUser,
+    loginUser,
     updateUser,
 };
