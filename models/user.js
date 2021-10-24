@@ -32,6 +32,15 @@ const UserSchema = new mongoose.Schema(
                 message: "Theme is not supported",
             },
         },
+        // TODO: Layout of the edit and preview. This would be like do you want a top down or left right split of the edit and preview window
+        // layout: {
+        //     type: String,
+        //     default: "h",
+        //     enum: {
+        //         values: ["h", "v"],
+        //         message: "Theme is not supported",
+        //     },
+        // },
     },
     { timestamps: true }
 );
