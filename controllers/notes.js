@@ -1,8 +1,8 @@
 const mongoose = require("mongoose");
+const { StatusCodes } = require("http-status-codes");
 
 const Note = require("../models/notes");
 const User = require("../models/user");
-const { StatusCodes } = require("http-status-codes");
 
 const getAllNotes = async (req, res) => {
     // console.log(req.query);
@@ -10,17 +10,17 @@ const getAllNotes = async (req, res) => {
     let query = { createdBy: req.userID };
 
     // Only notes with matching path. All notes if !path
-    const path = req.query.path || "root";
+    const path = req.query.path || "/";
     if (path) query = { ...query, path };
 
-    // Tag List filter based on exclusive
+    // Tag List filter based on exhaustive
     let tagsList;
     if (req.query.tags) tagsList = req.query.tags.split(",");
 
     // console.log(tagsList);
     // Note with all Tags
-    const exclusive = Boolean(req.query.exclusive) || false;
-    if (tagsList && exclusive === true)
+    const exhaustive = Boolean(req.query.exhaustive) || false;
+    if (tagsList && exhaustive === true)
         query = { ...query, tags: { $all: tagsList } };
     // notes = notes.filter(
     //     (note) =>
@@ -28,7 +28,7 @@ const getAllNotes = async (req, res) => {
     // );
 
     // Note with atleast 1 Tag
-    if (tagsList && exclusive === false)
+    if (tagsList && exhaustive === false)
         query = { ...query, tags: { $in: tagsList } };
     // notes = notes.filter(
     //     (note) =>
@@ -70,15 +70,6 @@ const createNote = async (req, res) => {
     const userObjectId = mongoose.Types.ObjectId(req.userID);
     const user = await User.findById(userObjectId);
     const currentAvailableUsertags = user.tags;
-
-    // const validTags = req.body.tags.filter(
-    //     (tag) => currentAvailableUsertags.indexOf(tag) != -1
-    // );
-
-    // if (validTags.length === 0)
-    //     return res
-    //         .status(StatusCodes.BAD_REQUEST)
-    //         .json({ msg: `Note content not valid` });
 
     const folderStructure = JSON.parse(user.path);
     if (

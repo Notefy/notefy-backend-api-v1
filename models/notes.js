@@ -1,16 +1,17 @@
 const mongoose = require("mongoose");
 
+const materialColorsNames = require("../utils/materialsColorsNames");
+
 const NoteSchema = new mongoose.Schema(
     {
-        // title:{
-        //     type: String,
-        //     trim: true,
-        //     required: [true, "Please provide data"],
-        // },
+        title: {
+            type: String,
+            trim: true,
+            required: [true, "Please provide data"],
+        },
         data: {
             type: String,
             trim: true,
-            // required: [true, "Please provide data"],
         },
         tags: {
             type: [String],
@@ -19,7 +20,15 @@ const NoteSchema = new mongoose.Schema(
         path: {
             type: String,
             trim: true,
-            default: "root",
+            default: "/",
+        },
+        color: {
+            type: String,
+            default: "grey",
+            enum: {
+                values: materialColorsNames,
+                message: "Color is not supported",
+            },
         },
         createdBy: {
             type: mongoose.Types.ObjectId,
