@@ -2,15 +2,15 @@ const express = require("express");
 const router = express.Router();
 
 const {
-    getFolder,
+    getFolderList,
     createFolder,
     updateFolder,
     deleteFolder,
 } = require("../controllers/folders");
 
-router.route("/").get(getFolder);
+router.route("/:id").get(getFolderList);
 router.route("/").post(createFolder);
-router.route("/").patch(updateFolder);
-router.route("/").delete(deleteFolder);
+router.route("/:id").patch(updateFolder);
+router.route("/:id").delete(deleteFolder);
 
 module.exports = router;

@@ -4,13 +4,23 @@ const { StatusCodes } = require("http-status-codes");
 const Folder = require("../models/folders");
 const User = require("../models/user");
 
-const getFolder = async (req, res) => {
-    const folderPathString = req.body.path || "";
-    const folderPath = folderPathString.split("/");
+// TODO: Root path has to be "" or undefined
+const getFolderList = async (req, res) => {
+    const folderID = req.params.id;
+    const folder = await Folder.findOne({
+        _id: folderID,
+        createdBy: req.userID,
+    });
 
+    if (!folder)
+        return res
+            .status(StatusCodes.NOT_FOUND)
+            .json({ msg: "Folder not Found" });
+
+    folder.path.push(folder.name);
     const folderlist = await Folder.find({
-        path: folderPath,
-        user: req.userID,
+        path: folder.path,
+        createdBy: req.userID,
     });
 
     return res
@@ -22,11 +32,11 @@ const getFolder = async (req, res) => {
 const doesFolderWithPathAndNameExists = async ({
     folderPath,
     folderName,
-    user,
+    createdBy,
 }) => {
     const folderlist = await Folder.find({
         path: folderPath,
-        user,
+        createdBy,
     }).select("name path -_id");
     return Object.values(folderlist.map((_) => _.name)).includes(folderName);
 };
@@ -45,7 +55,7 @@ const createFolder = async (req, res) => {
     const validFolderPath = await doesFolderWithPathAndNameExists({
         folderPath: folderPath.slice(0, folderPath.length - 1),
         folderName: folderPath[[folderPath.length - 1]],
-        user: req.userID,
+        createdBy: req.userID,
     });
     console.log(
         "validFolderPath: " + (folderPath.length === 1 || validFolderPath)
@@ -59,7 +69,7 @@ const createFolder = async (req, res) => {
     const duplicateFolder = await doesFolderWithPathAndNameExists({
         folderPath,
         folderName,
-        user: req.userID,
+        createdBy: req.userID,
     });
     console.log("duplicateFolder: " + duplicateFolder);
     if (duplicateFolder)
@@ -79,11 +89,114 @@ const createFolder = async (req, res) => {
 };
 
 const updateFolder = async (req, res) => {
+    const folderID = req.params.id;
+    const updateType = req.body.type;
+    const newFolderName = req.body.name;
+    const newFolderColor = req.body.color;
+    const newFolderTags = req.body.tags;
+
+    const folder = await Folder.findOne({
+        _id: folderID,
+        createdBy: req.userID,
+    });
+
+    if (!folder)
+        return res
+            .status(StatusCodes.NOT_FOUND)
+            .json({ msg: "Folder not Found" });
+
+    if (updateType === "color") {
+        const newFolderData = await Folder.findByIdAndUpdate(
+            folderID,
+            { $set: { color: newFolderColor } },
+            { new: true, runValidators: true }
+        );
+        return res
+            .status(StatusCodes.OK)
+            .json({ msg: "Updated", newFolderData });
+    } else if (updateType === "tags") {
+        const newFolderData = await Folder.findByIdAndUpdate(
+            folderID,
+            { $set: { tags: newFolderTags } },
+            { new: true, runValidators: true }
+        );
+        return res
+            .status(StatusCodes.OK)
+            .json({ msg: "Updated", newFolderData });
+    } else if (updateType === "name") {
+        // Update Child Folders
+        let subfolder = 0;
+        let matchObj = {};
+        matchObj[`path.${folder.path.length}`] = newFolderName;
+
+        await Folder.aggregate()
+            .project({
+                slicedPath: { $slice: ["$path", folder.path.length + 1] },
+                path: 1,
+            })
+            .match({
+                slicedPath: [...folder.path, folder.name],
+                createdBy: req.user.userID,
+            })
+            .cursor({ batchSize: 1000 })
+            .eachAsync(async (doc, i) => {
+                subfolder = i;
+                await Folder.findByIdAndUpdate(
+                    doc._id,
+                    { $set: matchObj },
+                    {
+                        new: true,
+                        runValidators: true,
+                    }
+                );
+            });
+
+        // Update Current Folder
+        const newFolder = await Folder.findByIdAndUpdate(
+            folderID,
+            { $set: { name: newFolderName } },
+            { new: true, runValidators: true }
+        );
+
+        return res
+            .status(StatusCodes.OK)
+            .json({ msg: "Updated", newFolder, subfolder: subfolder + 1 });
+    }
+
     res.status(StatusCodes.OK).json({ msg: "Dev" });
 };
 
 const deleteFolder = async (req, res) => {
-    res.status(StatusCodes.OK).json({ msg: "Dev" });
+    const folderID = req.params.id;
+    const folder = await Folder.findOne({
+        _id: folderID,
+        createdBy: req.userID,
+    });
+
+    if (!folder)
+        return res
+            .status(StatusCodes.NOT_FOUND)
+            .json({ msg: "Folder not Found" });
+
+    // Delete Child Folders
+    let subfolder = 0;
+    await Folder.aggregate()
+        .project({
+            slicedPath: { $slice: ["$path", folder.path.length] },
+        })
+        .match({ slicedPath: folder.path, createdBy: req.userID })
+        .cursor({ batchSize: 2 })
+        .eachAsync(async (doc, i) => {
+            subfolder = i;
+            await Folder.findByIdAndDelete(doc._id);
+        });
+
+    // Delete Current Folder
+    await Folder.findByIdAndDelete(folderID);
+
+    return res
+        .status(StatusCodes.OK)
+        .json({ msg: "Deleted", subfolder: subfolder + 1 });
 };
 
-module.exports = { getFolder, createFolder, updateFolder, deleteFolder };
+module.exports = { getFolderList, createFolder, updateFolder, deleteFolder };
