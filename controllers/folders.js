@@ -5,7 +5,17 @@ const Folder = require("../models/folders");
 const User = require("../models/user");
 
 const getFolder = async (req, res) => {
-    res.status(StatusCodes.OK).json({ msg: "Dev" });
+    const folderPathString = req.body.path || "";
+    const folderPath = folderPathString.split("/");
+
+    const folderlist = await Folder.find({
+        path: folderPath,
+        user: req.userID,
+    });
+
+    return res
+        .status(StatusCodes.OK)
+        .json({ folderlist, count: folderlist.length });
 };
 
 // Takes a folderPath, folderName and user and returns true or false if folder with path exists
