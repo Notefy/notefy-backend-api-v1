@@ -24,6 +24,7 @@ const auth = async (req, res, next) => {
                 .json({ msg: "Invalid Credentials" });
 
         req.userID = payload.userID;
+        req.user = user;
         next();
     } catch (error) {
         return res
