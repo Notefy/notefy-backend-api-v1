@@ -67,27 +67,26 @@ const validPath = ({ folderStructure, path }) => {
 };
 
 const createNote = async (req, res) => {
-    const userObjectId = mongoose.Types.ObjectId(req.userID);
-    const user = await User.findById(userObjectId);
-    const currentAvailableUsertags = user.tags;
+    // const currentAvailableUsertags = user.tags;
 
-    const folderStructure = JSON.parse(user.path);
-    if (
-        !validPath({
-            folderStructure: folderStructure,
-            path: req.body.path.split("."),
-        })
-    )
-        return res
-            .status(StatusCodes.BAD_REQUEST)
-            .json({ msg: `Note content not valid` });
+    // const folderStructure = JSON.parse(user.path);
+    // if (
+    //     !validPath({
+    //         folderStructure: folderStructure,
+    //         path: req.body.path.split("."),
+    //     })
+    // )
+    //     return res
+    //         .status(StatusCodes.BAD_REQUEST)
+    //         .json({ msg: `Note content not valid` });
 
     const note = await Note.create({
+        title: req.body.title,
         data: req.body.data,
         // tags: validTags,
         tags: req.body.tags,
         path: req.body.path,
-        createdBy: req.user.userID,
+        createdBy: req.userID,
     });
     res.status(StatusCodes.CREATED).json({ note });
 };
