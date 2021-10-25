@@ -1,6 +1,7 @@
 const jwt = require("jsonwebtoken");
-
 const { StatusCodes } = require("http-status-codes");
+
+const User = require("../models/user");
 
 const auth = async (req, res, next) => {
     const authHeader = req.headers.authorization;
@@ -15,6 +16,13 @@ const auth = async (req, res, next) => {
 
     try {
         const payload = jwt.verify(token, process.env.JWT_SECRET);
+        const user = await User.findById(payload.userID);
+
+        if (!user)
+            return res
+                .status(StatusCodes.UNAUTHORIZED)
+                .json({ msg: "Invalid Credentials" });
+
         req.userID = payload.userID;
         next();
     } catch (error) {
