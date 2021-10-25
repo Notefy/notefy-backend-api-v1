@@ -7,7 +7,7 @@ const NoteSchema = new mongoose.Schema(
         title: {
             type: String,
             trim: true,
-            required: [true, "Please provide data"],
+            required: [true, "Please provide title"],
         },
         data: {
             type: String,
