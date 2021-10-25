@@ -12,6 +12,7 @@ const app = express();
 const connectDB = require("./db/connect");
 const authRouter = require("./routes/auth");
 const notesRouter = require("./routes/notes");
+const folderRouter = require("./routes/folders");
 
 const authenticateUser = require("./middleware/authentication");
 // const notFound = require("./middleware/notFound");
@@ -32,7 +33,10 @@ app.use(express.json());
 
 // JSON Routes
 app.use("/api/v1/auth", authRouter);
+// TODO: merge the notes and folder functions in /files
+app.use("/api/v1/files", authenticateUser);
 app.use("/api/v1/notes", authenticateUser, notesRouter);
+app.use("/api/v1/folder", authenticateUser, folderRouter);
 
 app.use("/", (req, res) => {
     res.send(`<h1>Noto API</h1>`);
