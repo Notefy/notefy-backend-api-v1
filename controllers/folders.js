@@ -48,18 +48,12 @@ const createFolder = async (req, res) => {
     const folderPathString = req.body.path || "";
     const folderPath = folderPathString.split("/");
 
-    // console.log(folderPathString);
-    console.log(folderPath);
-
     // Folder path exists
     const validFolderPath = await doesFolderWithPathAndNameExists({
         folderPath: folderPath.slice(0, folderPath.length - 1),
         folderName: folderPath[[folderPath.length - 1]],
         createdBy: req.userID,
     });
-    console.log(
-        "validFolderPath: " + (folderPath.length === 1 || validFolderPath)
-    );
     if (!(folderPath.length === 1 || validFolderPath))
         return res
             .status(StatusCodes.NOT_FOUND)
@@ -71,7 +65,6 @@ const createFolder = async (req, res) => {
         folderName,
         createdBy: req.userID,
     });
-    console.log("duplicateFolder: " + duplicateFolder);
     if (duplicateFolder)
         return res
             .status(StatusCodes.OK)
