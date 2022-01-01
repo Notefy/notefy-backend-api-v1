@@ -7,7 +7,7 @@ const {
     getNote,
     updateNote,
     deleteNote,
-} = require("../controllers/notes");
+} = require("../controllers/notes.controller");
 
 // Add Path
 // Update Path

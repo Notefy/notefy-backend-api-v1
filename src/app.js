@@ -9,14 +9,14 @@ require("express-async-errors");
 const express = require("express");
 const app = express();
 
-const connectDB = require("./db/connect");
-const authRouter = require("./routes/auth");
-const notesRouter = require("./routes/notes");
-const folderRouter = require("./routes/folders");
+const connectDB = require("./api/v1/db/connect");
+const authRouter = require("./api/v1/routes/auth.routes");
+const notesRouter = require("./api/v1/routes/notes.routes");
+const folderRouter = require("./api/v1/routes/folders.routes");
 
-const authenticateUser = require("./middleware/authentication");
-// const notFound = require("./middleware/notFound");
-// const errorHandler = require("./middleware/errorHandler");
+const authenticateUser = require("./api/v1/middleware/authentication.middleware");
+// const notFound = require("./api/v1/middleware/notFound.middleware");
+// const errorHandler = require("./api/v1/middleware/errorHandler.middleware");
 
 // Extra security packages
 // app.set("trust proxy", 1);

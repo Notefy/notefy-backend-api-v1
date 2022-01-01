@@ -1,8 +1,7 @@
 const mongoose = require("mongoose");
 const { StatusCodes } = require("http-status-codes");
 
-const Folder = require("../models/folders");
-const User = require("../models/user");
+const Folder = require("../models/folders.model");
 
 // TODO: Root path has to be "" or undefined
 const getFolderList = async (req, res) => {
@@ -82,6 +81,7 @@ const createFolder = async (req, res) => {
 };
 
 const updateFolder = async (req, res) => {
+    const userID = req.userID;
     const folderID = req.params.id;
     const updateType = req.body.type;
     const newFolderName = req.body.name;
@@ -90,7 +90,7 @@ const updateFolder = async (req, res) => {
 
     const folder = await Folder.findOne({
         _id: folderID,
-        createdBy: req.userID,
+        createdBy: userID,
     });
 
     if (!folder)
@@ -99,8 +99,8 @@ const updateFolder = async (req, res) => {
             .json({ msg: "Folder not Found" });
 
     if (updateType === "color") {
-        const newFolderData = await Folder.findByIdAndUpdate(
-            folderID,
+        const newFolderData = await Folder.findOneAndUpdate(
+            { _id: folderID, createdBy: userID },
             { $set: { color: newFolderColor } },
             { new: true, runValidators: true }
         );
@@ -108,8 +108,8 @@ const updateFolder = async (req, res) => {
             .status(StatusCodes.OK)
             .json({ msg: "Updated", newFolderData });
     } else if (updateType === "tags") {
-        const newFolderData = await Folder.findByIdAndUpdate(
-            folderID,
+        const newFolderData = await Folder.findOneAndUpdate(
+            { _id: folderID, createdBy: userID },
             { $set: { tags: newFolderTags } },
             { new: true, runValidators: true }
         );

@@ -6,7 +6,7 @@ const {
     createFolder,
     updateFolder,
     deleteFolder,
-} = require("../controllers/folders");
+} = require("../controllers/folders.controller");
 
 router.route("/:id").get(getFolderList);
 router.route("/").post(createFolder);
