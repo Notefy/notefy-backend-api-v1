@@ -49,8 +49,8 @@ const updateNote = async ({
         folderName: notePath[[notePath.length - 1]],
         createdBy: createdBy,
     });
-
-    if (!validFolderPath) return { msg: "Folder Doesnt Exists" };
+    if (!(notePath.length === 1 || validFolderPath))
+        return { msg: "Folder Doesnt Exists" };
 
     const note = await Note.findOneAndUpdate(
         { _id: noteID, createdBy: createdBy },
