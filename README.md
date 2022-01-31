@@ -1,10 +1,10 @@
-# Noto - Note taking app - Backend
+# Notefy - Note taking app - Backend
 
 Link to front end
 
 ## Description
 
-This is the backend of the Noto app. It is a simple note taking app that allows users to create, edit, and delete notes.
+This is the backend of the Notefy app. It is a simple note taking app that allows users to create, edit, and delete notes.
 
 ## Prerequisites
 
@@ -88,6 +88,8 @@ For registration and login, use the following endpoints:
 
 -   `PATCH /api/v2/auth/user` - will update a user
 
+    _Authentication bearer token in header needed_
+
     With the following body:
 
     ```
@@ -115,6 +117,8 @@ For registration and login, use the following endpoints:
 
 -   `DELETE /api/v2/auth/user` - will update a user
 
+    _Authentication bearer token in header needed_
+
     With the following body:
 
     ```
@@ -136,6 +140,8 @@ For registration and login, use the following endpoints:
 **Create File:**
 
 -   `POST /api/v2/file` - will create a file
+
+    _Authentication bearer token in header needed_
 
     With the following body:
 
@@ -179,6 +185,8 @@ For registration and login, use the following endpoints:
 
 -   `GET /api/v2/file` - will get all files at root folder.
 
+    _Authentication bearer token in header needed_
+
     We will return the following object if successful:
 
     ```
@@ -210,6 +218,8 @@ For registration and login, use the following endpoints:
 
 -   `GET /api/v2/file/:id` - will get the file based on `id`.
 
+    _Authentication bearer token in header needed_
+
     For `folders` we will return the folder datails and the list of folders and notes under the folder.
 
     For `notes` we will return the note details.
@@ -217,6 +227,8 @@ For registration and login, use the following endpoints:
 **Update File:**
 
 -   `PATCH /api/v2/file/:id` - will update the file based on `id`.
+
+    _Authentication bearer token in header needed_
 
     The file URL decides the type of file to update. The propeties of the update are based on the type of file.
 
@@ -226,6 +238,8 @@ For registration and login, use the following endpoints:
 **Delete File:**
 
 -   `DELETE /api/v2/file/:id` - will delete the file based on `id`.
+
+    _Authentication bearer token in header needed_
 
     We will return the following object if successful:
 

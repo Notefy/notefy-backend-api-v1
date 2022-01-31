@@ -2,7 +2,7 @@ require("dotenv").config();
 require("express-async-errors");
 
 // const helmet = require('helmet');
-// const cors = require('cors');
+const cors = require("cors");
 // const xss = require('xss-clean');
 // const rateLimiter = require('express-rate-limit');
 
@@ -21,7 +21,7 @@ const { connectToDB } = require("./api/v2/utils");
 // );
 app.use(express.json());
 // app.use(helmet());
-// app.use(cors());
+app.use(cors());
 // app.use(xss());
 
 // Routes

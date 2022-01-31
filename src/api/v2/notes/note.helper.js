@@ -38,18 +38,18 @@ const updateNote = async ({
     newNoteTitle,
     newNoteData,
     newNoteTags,
-    newNotePathString,
+    newNotePath,
     createdBy,
 }) => {
-    const notePath = newNotePathString.split("/");
+    // const notePath = newNotePath.split("/");
 
     // Folder path exists
     const validFolderPath = await folderHelper.doesFolderWithPathAndNameExists({
-        folderPath: notePath.slice(0, notePath.length - 1),
-        folderName: notePath[[notePath.length - 1]],
+        folderPath: newNotePath.slice(0, newNotePath.length - 1),
+        folderName: newNotePath[[newNotePath.length - 1]],
         createdBy: createdBy,
     });
-    if (!(notePath.length === 1 || validFolderPath))
+    if (!(newNotePath.length === 1 || validFolderPath))
         return { msg: "Folder Doesnt Exists" };
 
     const note = await Note.findOneAndUpdate(
@@ -58,7 +58,7 @@ const updateNote = async ({
             title: newNoteTitle,
             data: newNoteData,
             tags: newNoteTags,
-            path: notePath,
+            path: newNotePath,
         },
         { new: true, runValidators: true }
     );
