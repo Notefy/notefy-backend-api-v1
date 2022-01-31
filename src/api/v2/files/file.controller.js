@@ -6,10 +6,11 @@ const { noteModel: Note, noteHelper } = require("../notes");
 const { getFilesAtPathByUser } = require("./file.helper");
 
 const getFilesAtRoot = async (req, res) => {
-    const result = await getFilesAtPathByUser({
+    const children = await getFilesAtPathByUser({
         createdBy: req.userID,
         path: { $size: 1 },
     });
+    const result = { children };
     return res.status(StatusCodes.OK).json(result);
 };
 
@@ -28,7 +29,6 @@ const getFile = async (req, res) => {
             path: subFilePath,
         });
         const result = { ...file._doc, children };
-        console.log(file);
         return res.status(StatusCodes.OK).json(result);
     }
 
@@ -107,7 +107,7 @@ const updateFile = async (req, res) => {
             newNoteTitle: req.body.title,
             newNoteData: req.body.data,
             newNoteTags: req.body.tags,
-            newNotePathString: req.body.path,
+            newNotePath: req.body.path,
             createdBy: req.userID,
         });
         return res.status(StatusCodes.OK).json({ result });
